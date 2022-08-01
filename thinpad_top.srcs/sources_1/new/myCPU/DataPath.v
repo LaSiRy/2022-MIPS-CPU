@@ -39,25 +39,25 @@ module DataPath(
   output wire[31:0]Din_addr,
   output wire[31:0]PC_out//
   );
-//branch 在EX阶段实现：EX 阶段，比较+PC赋值
-//寄存器
+//branch ??EX???????EX ??Σ????+PC???
+//?????
 //////////////////////////////////
-  //PC寄存器
+  //PC?????
   wire  [31:0]pc;
-  //preIF:指令准备阶段 传输pc
+  //preIF:????????? ????pc
   wire  [31:0]pre_pc;
   reg stall_flag;
   reg jump_flag;
   reg [31:0]inst_field;
   reg [31:0]inst_store;
-  //IFID寄存器
+  //IFID?????
   reg [31:0]IFID_pc;//pc
-  reg [31:0]IFID_inst;//inst;得到指令
+  reg [31:0]IFID_inst;//inst;??????
   reg IFID_is_Delayslot;
   reg [4:0]rs1;
   reg [4:0]rs2;
   reg [4:0]rd;
-  //IDEX寄存器
+  //IDEX?????
   reg [31:0]IDEX_pc;//pc 32 
   reg [31:0]IDEX_inst;//inst
   reg IDEX_is_Delayslot;
@@ -77,11 +77,11 @@ module DataPath(
   reg IDEX_ALUSrcB;
   reg IDEX_ALUSrcA;
   reg [1:0]IDEX_RegWrite;
-  //EXMEM寄存器
+  //EXMEM?????
   reg [31:0]EXpreMEM_rs2;//rs2 32
   reg [4 :0]EXpreMEM_rd;//rd 5
-  reg [31:0]EXpreMEM_Alu;//alu_res 32 用作地址或者写入结果
-  reg [31:0]EXpreMEM_lui;//lui 写入结果
+  reg [31:0]EXpreMEM_Alu;//alu_res 32 ???????????д????
+  reg [31:0]EXpreMEM_lui;//lui д????
   reg [31:0]EXpreMEM_pc;//Jump:pc
   reg [31:0]EXpreMEM_inst;//inst
   reg EXpreMEM_is_Delayslot;
@@ -90,13 +90,13 @@ module DataPath(
   reg EXpreMEM_WB;
   reg [1:0]EXpreMEM_MemRW;//read+write
   reg [1:0]EXpreMEM_RegWrite;
-  reg EXpreMEM_isUart;
+  // reg EXpreMEM_isUart;
   reg EXpreMEM_valid;
-  //preMEM:地址、数据传输阶段、MUL计算阶段
+  //preMEM:?????????????Ρ?MUL??????
   reg [31:0]preMEM_addr;
   reg [31:0]preMEM_data;//rs2
   reg [4 :0]preMEM_rd;//rd 5
-  reg [31:0]preMEM_lui;//lui 写入结果
+  reg [31:0]preMEM_lui;//lui д????
   reg [31:0]preMEM_pc;//Jump:pc
   reg [31:0]preMEM_inst;//inst
   reg [1:0]preMEM_mem_op;
@@ -104,10 +104,10 @@ module DataPath(
   reg preMEM_branch;
   reg [1:0]preMEM_MemRW;//read+write
   reg [1:0]preMEM_RegWrite;
-  reg preMEM_isUart;
-  reg [31:0]preMEM_Datain;
+  // reg preMEM_isUart;
+  // reg [31:0]preMEM_Datain;
   reg preMEM_valid;  
-  //MEMWB寄存器
+  //MEMWB?????
   reg [4 :0]MEMWB_rd;//rd 5
   reg [31:0]MEMWB_mem;//rd 32
   reg [31:0]MEMWB_Alu;//alu_res 32
@@ -120,7 +120,7 @@ module DataPath(
   reg [1:0]MEMWB_RegWrite;
 ///////////////////////////////////
 
-//Control信号
+//Control???
 ///////////////////////  
   //Hazard
   wire PCWen;
@@ -281,7 +281,7 @@ assign isRead_data = (|EXpreMEM_MemRW);
                     (EXpreMEM_mem_op==`mem_sel_SW)? EXpreMEM_rs2:32'b0;
   assign Din_addr = EXpreMEM_Alu;
 
-HazardDetec HD(//在实现了forwarding之后，xxx-sd, xxx-ld, ld-use,跳转指令需要nop
+HazardDetec HD(//???????forwarding???xxx-sd, xxx-ld, ld-use,?????????nop
     .rst(rst),
     //Date Hazard
     .IFID_rs1(rs1),
@@ -302,29 +302,29 @@ HazardDetec HD(//在实现了forwarding之后，xxx-sd, xxx-ld, ld-use,跳转指令需要nop
     .EXpreMEM_Branch(EXpreMEM_branch),
     .preMEM_Branch(preMEM_branch),
     //Output
-    .PCWen(PCWen),//1:可写
-    .IFIDWen(IFIDWen),//1：可写
-    .Contrl_zero(Ctrl_Z)//1:不改变 0:将IDEX所有读写信号置零//与赋值
+    .PCWen(PCWen),//1:??д
+    .IFIDWen(IFIDWen),//1????д
+    .Contrl_zero(Ctrl_Z)//1:????? 0:??IDEX???ж?д???????//???
     );
 
 PCreg32 pcreg32(
     .clk(clk),
     .rst(rst),
     .PCWen(PCWen),//PC write enable
-    .isjl(IDEX_isjl),//立即数跳转
-    .isjr(IDEX_isjr),//寄存器值跳转
-    .IDEX_Branch(IDEX_branch),//ID_EX阶段branch信号
-    .EXpreMEM_Branch(EXpreMEM_branch),//EX_preMem阶段跳转
-    .preMEM_Branch(preMEM_branch),//preMem阶段跳转
-    .jump_reg_pc(ALU_res),//jr跳转地址
-    .PC(IDEX_pc),//当前PC
-    .imm(IDEX_Imm),//立即数
-    .compres(res_comp), //比较结果
-    .pre_pc(pre_pc), //输出的pc
-    .PC_out(pc)//当前取址地址
+    .isjl(IDEX_isjl),//?????????
+    .isjr(IDEX_isjr),//?????????
+    .IDEX_Branch(IDEX_branch),//ID_EX???branch???
+    .EXpreMEM_Branch(EXpreMEM_branch),//EX_preMem??????
+    .preMEM_Branch(preMEM_branch),//preMem??????
+    .jump_reg_pc(ALU_res),//jr??????
+    .PC(IDEX_pc),//???PC
+    .imm(IDEX_Imm),//??????
+    .compres(res_comp), //?????
+    .pre_pc(pre_pc), //?????pc
+    .PC_out(pc)//????????
     );
 
-SCPU_ctrl  scpu_ctrl(//用于ID阶段解码
+SCPU_ctrl  scpu_ctrl(//????ID??ν???
 //31...26:opcode 6bit
 //5...0 func  6bit
     .Ctrl_Z(Ctrl_Z),
@@ -332,35 +332,35 @@ SCPU_ctrl  scpu_ctrl(//用于ID阶段解码
     .OPcode(IFID_inst[31:26]),
     .Func6(IFID_inst[5:0]),
     .ImmSel(ImmSel),
-    .ALUSrc_B(ALUSrc_B),//ALUB入口选择0:rs2,1:imm
-    .ALUSrc_A(ALUSrc_A),//ALUA入口选择0:rs1,1:imm
+    .ALUSrc_B(ALUSrc_B),//ALUB??????0:rs2,1:imm
+    .ALUSrc_A(ALUSrc_A),//ALUA??????0:rs1,1:imm
     .MemtoReg(MemtoReg),//0:ALU,1:Mem,2:PC+4 3:Imm 4:pc+imm 
     //pc_jump
     .isBranch(isBranch),
     .is_jl(is_jl),
     .is_jr(is_jr),
-    .RegWrite(RegWrite),//1:register可写
+    .RegWrite(RegWrite),//1:register??д
     .MemW(MemW),
     .MemR(MemR),
     .mem_op(mem_op),
-    .ALU_Control(ALU_Control),//ALU控制信号
+    .ALU_Control(ALU_Control),//ALU???????
     .Comp_ctrl(Comp_ctrl)
     );   
     
-mem_sel memsel(//产生dram写选择信号
+mem_sel memsel(//????dramд??????
     .addr(EXpreMEM_Alu[1:0]),
     .mem_op(EXpreMEM_mem_op),
     .mem_sel(mem_sel)
     );
     
-//产生立即数 
+//?????????? 
 immGen immgen(//ID
     .inst_field(IFID_inst),
     .ImmSel(ImmSel),
     .Imm_out(Immediate)
     );
 
-//选择REG写入的数据        
+//???REGд???????        
 Write2Reg wr(
     .pc(MEMWB_pc),
     .ALU(MEMWB_Alu),
