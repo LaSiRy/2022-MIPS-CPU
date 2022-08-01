@@ -33,14 +33,14 @@ module Comparator(
     assign result = res;
     always @(*) begin
     case(ctrl)
-    `CMP_EQ: res=(a_val==b_val)?1'b1:0;
-    `CMP_LT: res=(a_adder<b_adder)?1'b1:0;
-    `CMP_GE: res=(a_adder<b_adder)?0:1'b1;
-    `CMP_GT: res=(a_adder>b_adder)?1'b1:0;
-    `CMP_NE: res=(a_val==b_val)?0:1'b1;
-    `CMP_LTU:res=(a_val<b_val)?1'b1:0;
-    `CMP_GEU:res=(a_val<b_val)?0:1'b1;
-    default: res=0;
+    `CMP_EQ: res<=(a_val==b_val)?1'b1:0;
+    `CMP_LT: res<=(a_adder<b_adder)?1'b1:0;
+    `CMP_GE: res<=(a_adder<b_adder)?0:1'b1;
+    `CMP_GT: res<=(a_adder>b_adder)?1'b1:0;
+    `CMP_NE: res<=(a_val==b_val)?0:1'b1;
+    `CMP_LTU:res<=(a_val<b_val)?1'b1:0;
+    `CMP_GEU:res<=(a_val<b_val)?0:1'b1;
+    default: res<=0;
     endcase
     end
 endmodule

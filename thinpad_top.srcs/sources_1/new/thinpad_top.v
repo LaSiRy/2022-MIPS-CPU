@@ -313,72 +313,74 @@ always @ (posedge clk_10M) begin
     end
 end
 
-// async_receiver #(.ClkFrequency(25000000),.Baud(9600)) 
-//     ext_uart_r(
-//         .clk(clk_10M),                      
-//         .RxD(rxd),                          
-//         .RxD_data_ready(ext_uart_ready),  
-//         .RxD_clear(ext_uart_clear),       
-//         .RxD_data(ext_uart_rx)            
-//     );
-// async_transmitter #(.ClkFrequency(25000000),.Baud(9600)) 
-//     ext_uart_t(
-//         .clk(clk_10M),                
-//         .TxD(txd),                      
-//         .TxD_busy(ext_uart_busy),      
-//         .TxD_start(ext_uart_start),    
-//         .TxD_data(ext_uart_tx)        
-//     );
+async_receiver #(.ClkFrequency(25000000),.Baud(9600)) 
+    ext_uart_r(
+        .clk(clk_10M),                      
+        .RxD(rxd),                          
+        .RxD_data_ready(ext_uart_ready),  
+        .RxD_clear(ext_uart_clear),       
+        .RxD_data(ext_uart_rx)            
+    );
+async_transmitter #(.ClkFrequency(25000000),.Baud(9600)) 
+    ext_uart_t(
+        .clk(clk_10M),                
+        .TxD(txd),                      
+        .TxD_busy(ext_uart_busy),      
+        .TxD_start(ext_uart_start),    
+        .TxD_data(ext_uart_tx)        
+    );
 
-// always @(*) begin 
-//     if (reset_of_clk10M) begin
-//         ext_uart_buffer <= 8'b0;
-//         ext_uart_avai <= 1'b0;
-//     end
-//     else if(ext_uart_ready)begin
-//         ext_uart_buffer <= ext_uart_rx;
-//         ext_uart_avai <= 1'b1;
-//     end 
-//     else if(data_sram_addr == 32'hbfd003f8 && (data_sram_en & ~(|data_sram_wen)) && ext_uart_avai)begin 
-//         ext_uart_avai <= 1'b0;
-//     end
-// end
+always @(*) begin 
+    if (reset_of_clk10M) begin
+        ext_uart_buffer <= 8'b0;
+        ext_uart_avai <= 1'b0;
+    end
+    else if(ext_uart_ready)begin
+        ext_uart_buffer <= ext_uart_rx;
+        ext_uart_avai <= 1'b1;
+    end 
+    else if(data_sram_addr == 32'hbfd003f8 && (data_sram_en & ~(|data_sram_wen)) && ext_uart_avai)begin 
+        ext_uart_avai <= 1'b0;
+    end
+    else begin end
+end
 
-// always @(*) begin 
-//      if (reset_of_clk10M) begin
-//         ext_uart_tx <= 0;
-//         ext_uart_start <= 0;
-//     end
-//     else if(!ext_uart_busy && cpu_data_avai)begin 
-//         ext_uart_tx <= uart_wdata[7:0];
-//         ext_uart_start <= 1'b1;
-//     end else begin 
-//         ext_uart_start <= 0;
-//     end
-// end
+always @(*) begin 
+     if (reset_of_clk10M) begin
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
+    end
+    else if(!ext_uart_busy && cpu_data_avai)begin 
+        ext_uart_tx <= uart_wdata[7:0];
+        ext_uart_start <= 1'b1;
+    end 
+    else begin 
+        ext_uart_start <= 0;
+    end
+end
 
-// always @(negedge clk_10M)begin
-//     if(reset_of_clk10M) begin
-//         ext_uart_clear_r <= 0;
-//     end
-//     else begin
-//         if(already_read && ext_uart_clear_r == 0)begin
-//             ext_uart_clear_r <= 1'b1;
-//         end
-//         else if(ext_uart_clear_r == 1'b1)begin
-//             ext_uart_clear_r <= 0;
-//         end
-//         else begin end
-//     end
-// end
+always @(negedge clk_10M)begin
+    if(reset_of_clk10M) begin
+        ext_uart_clear_r <= 0;
+    end
+    else begin
+        if(already_read && ext_uart_clear_r == 0)begin
+            ext_uart_clear_r <= 1'b1;
+        end
+        else if(ext_uart_clear_r == 1'b1)begin
+            ext_uart_clear_r <= 0;
+        end
+        else begin end
+    end
+end
 
-// always @(posedge clk_10M)begin
-//     if(reset_of_clk10M) begin
-//         ext_uart_clear <= 0;
-//     end
-//     else begin
-//         ext_uart_clear <= ext_uart_clear_r;
-//     end
-// end
+always @(posedge clk_10M)begin
+    if(reset_of_clk10M) begin
+        ext_uart_clear <= 0;
+    end
+    else begin
+        ext_uart_clear <= ext_uart_clear_r;
+    end
+end
 
 endmodule
