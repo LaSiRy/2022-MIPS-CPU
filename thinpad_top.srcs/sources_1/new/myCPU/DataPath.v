@@ -173,8 +173,8 @@ assign debug_wb_rf_wnum = MEMWB_rd;
 assign debug_wb_rf_wdata = rd_val; 
 assign IDEX_rs1_val=rs1_val;
 assign IDEX_rs2_val=rs2_val;
-assign isRead_inst = 1'b1;
-assign isRead_data = (|EXpreMEM_MemRW);
+assign isRead_inst = rst?0:1'b1;
+assign isRead_data = rst?0:(|EXpreMEM_MemRW);
 //debug
 //    `DBG_Core_Assignments
 //ending

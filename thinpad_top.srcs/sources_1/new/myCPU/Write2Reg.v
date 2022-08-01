@@ -45,7 +45,7 @@ module Write2Reg(
             default: begin res <= 32'b0; end
             endcase
         end
-        else begin end
+        else begin res <= 32'b0;  end
        end
     3'd2:res <= PC_8;
     3'd3:res <= lui;

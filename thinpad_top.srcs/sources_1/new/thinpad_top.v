@@ -329,7 +329,7 @@ async_transmitter #(.ClkFrequency(25000000),.Baud(9600))
         .TxD_data(ext_uart_tx)        
     );
 
-always @(*) begin 
+always @(posedge clk_10M) begin 
     if (reset_of_clk10M) begin
         ext_uart_buffer <= 8'b0;
         ext_uart_avai <= 1'b0;
@@ -344,7 +344,7 @@ always @(*) begin
     else begin end
 end
 
-always @(*) begin 
+always @(posedge clk_10M) begin 
      if (reset_of_clk10M) begin
         ext_uart_tx <= 0;
         ext_uart_start <= 0;

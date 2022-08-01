@@ -56,7 +56,7 @@ module Forwarding(
               2'b0: ALU_Scr1 <= EXMEM_Alu;
               2'b10: ALU_Scr1 <= EXMEM_pc + 4'b1000;
               2'b11: ALU_Scr1 <= EXMEM_lui;
-              default:begin end
+              default:begin ALU_Scr1 <= IDEX_rs1; end
             endcase
         end
         else ALU_Scr1 <= IDEX_rs1;
@@ -67,7 +67,7 @@ module Forwarding(
               2'b0: ALU_Scr1 <= preMEM_rdval;
               2'b10: ALU_Scr1 <= preMEM_pc + 4'b1000;
               2'b11: ALU_Scr1 <= preMEM_lui;
-              default:begin end
+              default:begin ALU_Scr1 <= IDEX_rs1; end
             endcase
         end
         else ALU_Scr1 <= IDEX_rs1;
@@ -84,7 +84,7 @@ module Forwarding(
               2'b0: ALU_Scr2 <= EXMEM_Alu;
               2'b10: ALU_Scr2 <= EXMEM_pc + 4'b1000;
               2'b11: ALU_Scr2 <= EXMEM_lui;
-              default:begin end
+              default:begin ALU_Scr2 <= IDEX_rs2; end
             endcase
         end
         else ALU_Scr2 <= IDEX_rs2;
@@ -95,7 +95,7 @@ module Forwarding(
               2'b0: ALU_Scr2 <= preMEM_rdval;
               2'b10: ALU_Scr2 <= preMEM_pc + 4'b1000;
               2'b11: ALU_Scr2 <= preMEM_lui;
-              default:begin end
+              default:begin ALU_Scr2 <= IDEX_rs2; end
             endcase
         end
         else ALU_Scr2 <= IDEX_rs2;
