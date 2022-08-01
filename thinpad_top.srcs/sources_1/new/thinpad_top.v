@@ -1,5 +1,4 @@
 `default_nettype none
-`include "Defines.vh"
 module thinpad_top(
     input wire clk_50M,           
     input wire clk_11M0592,       
