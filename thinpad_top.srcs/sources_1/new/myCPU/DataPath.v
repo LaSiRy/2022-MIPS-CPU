@@ -39,25 +39,24 @@ module DataPath(
   output wire[31:0]Din_addr,
   output wire[31:0]PC_out//
   );
-//branch ??EX???????EX ??¦²????+PC???
-//?????
+
 //////////////////////////////////
-  //PC?????
+  //PC
   wire  [31:0]pc;
-  //preIF:????????? ????pc
+  //preIF:
   wire  [31:0]pre_pc;
   reg stall_flag;
   reg jump_flag;
   reg [31:0]inst_field;
   reg [31:0]inst_store;
-  //IFID?????
+  //IFID
   reg [31:0]IFID_pc;//pc
-  reg [31:0]IFID_inst;//inst;??????
+  reg [31:0]IFID_inst;//inst;
   reg IFID_is_Delayslot;
   reg [4:0]rs1;
   reg [4:0]rs2;
   reg [4:0]rd;
-  //IDEX?????
+  //IDEX
   reg [31:0]IDEX_pc;//pc 32 
   reg [31:0]IDEX_inst;//inst
   reg IDEX_is_Delayslot;
@@ -77,11 +76,11 @@ module DataPath(
   reg IDEX_ALUSrcB;
   reg IDEX_ALUSrcA;
   reg [1:0]IDEX_RegWrite;
-  //EXMEM?????
+  //EXMEM
   reg [31:0]EXpreMEM_rs2;//rs2 32
   reg [4 :0]EXpreMEM_rd;//rd 5
-  reg [31:0]EXpreMEM_Alu;//alu_res 32 ???????????§Õ????
-  reg [31:0]EXpreMEM_lui;//lui §Õ????
+  reg [31:0]EXpreMEM_Alu;//alu_res 32 
+  reg [31:0]EXpreMEM_lui;//lui 
   reg [31:0]EXpreMEM_pc;//Jump:pc
   reg [31:0]EXpreMEM_inst;//inst
   reg EXpreMEM_is_Delayslot;
@@ -92,11 +91,11 @@ module DataPath(
   reg [1:0]EXpreMEM_RegWrite;
   // reg EXpreMEM_isUart;
   reg EXpreMEM_valid;
-  //preMEM:?????????????¦±?MUL??????
+  //preMEM:
   reg [31:0]preMEM_addr;
   reg [31:0]preMEM_data;//rs2
   reg [4 :0]preMEM_rd;//rd 5
-  reg [31:0]preMEM_lui;//lui §Õ????
+  reg [31:0]preMEM_lui;//lui 
   reg [31:0]preMEM_pc;//Jump:pc
   reg [31:0]preMEM_inst;//inst
   reg [1:0]preMEM_mem_op;
@@ -107,7 +106,7 @@ module DataPath(
   // reg preMEM_isUart;
   // reg [31:0]preMEM_Datain;
   reg preMEM_valid;  
-  //MEMWB?????
+  //MEMWB
   reg [4 :0]MEMWB_rd;//rd 5
   reg [31:0]MEMWB_mem;//rd 32
   reg [31:0]MEMWB_Alu;//alu_res 32
@@ -120,7 +119,7 @@ module DataPath(
   reg [1:0]MEMWB_RegWrite;
 ///////////////////////////////////
 
-//Control???
+//Control
 ///////////////////////  
   //Hazard
   wire PCWen;

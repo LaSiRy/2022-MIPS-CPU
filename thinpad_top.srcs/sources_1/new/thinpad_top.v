@@ -136,20 +136,13 @@ reg sel_uart;
 reg sel_uart_flag; 
 
 wire [31:0] uart_rdata;
-reg [31:0] uart_wdata;
 
 wire [7:0] ext_uart_rx;
 reg  [7:0] ext_uart_buffer, ext_uart_tx;
 wire ext_uart_ready, ext_uart_busy;
 wire already_read;
 reg ext_uart_clear;
-reg ext_uart_clear_r;
-reg ext_uart_start, ext_uart_avai;
-
-reg cpu_data_avai;
-
-//reg uart_read_flag;
-//reg uart_write_flag;
+reg ext_uart_start;
 
 assign base_ram_data = ~base_ram_we_n_r ? base_ram_data_r : 32'bz;
 assign ext_ram_data = ~ext_ram_we_n_r ? ext_ram_data_r : 32'bz;
@@ -166,7 +159,7 @@ assign ext_ram_ce_n = ext_ram_ce_n_r;
 assign ext_ram_oe_n = ext_ram_oe_n_r;
 assign ext_ram_we_n = ext_ram_we_n_r;
 
-assign already_read = ext_uart_ready && data_sram_addr == 32'hbfd003f8 && (data_sram_en & ~(|data_sram_wen));
+assign already_read = ext_uart_ready && (sel_uart & (~sel_uart_flag));
 
 always @ (*) begin
     if (reset_of_clk10M) begin
@@ -197,12 +190,13 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
-
+        
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
+        
         sel_base_sram <= 1'b0;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
-        uart_wdata <= 32'b0;
-        cpu_data_avai <= 1'b0;
     end
     else if (data_sram_addr >=32'h80000000 && data_sram_addr <= 32'h803fffff && data_sram_en) begin
         base_ram_addr_r <= data_sram_addr[21:2];
@@ -218,12 +212,13 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_we_n_r <= 1'b1;  
         ext_ram_data_r <= 32'b0;
+        
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
 
         sel_base_sram <= 1'b0;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
-        uart_wdata <= 32'b0;
-        cpu_data_avai <= 1'b0;
     end
     else if (data_sram_addr >= 32'h80400000 && data_sram_addr <= 32'h807fffff && data_sram_en) begin       
         base_ram_addr_r <= inst_sram_addr[21:2];
@@ -239,14 +234,15 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
         ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
         ext_ram_data_r <= data_sram_wdata;
+        
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
 
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
-        uart_wdata <= 32'b0;
-        cpu_data_avai <= 1'b0;
     end
-    else if (data_sram_addr == 32'hbfd003fc) begin // && data_sram_en
+    else if (data_sram_addr == 32'hBFD003FC && data_sram_en) begin // 
         base_ram_addr_r <= inst_sram_addr[21:2];
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
@@ -260,14 +256,15 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+        
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
 
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b1;
         sel_uart_flag <= 1'b1;
-        uart_wdata <= 32'b0;
-        cpu_data_avai <= 1'b0;
     end
-    else if (data_sram_addr == 32'hbfd003f8 && data_sram_en) begin        
+    else if (data_sram_addr == 32'hBFD003F8 && data_sram_en) begin        
         base_ram_addr_r <= inst_sram_addr[21:2];
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
@@ -281,12 +278,13 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+        
+        ext_uart_tx <= (|data_sram_wen)? data_sram_wdata[7:0]:0;
+        ext_uart_start <= (|data_sram_wen)? 1'b1:0;
 
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b1;
         sel_uart_flag <= 1'b0;
-        uart_wdata <= data_sram_wdata;
-        cpu_data_avai <= (|data_sram_wen) ? 1'b1 : 1'b0;
     end
     else begin        
         base_ram_addr_r <= inst_sram_addr[21:2];
@@ -302,12 +300,13 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+        
+        ext_uart_tx <= 0;
+        ext_uart_start <= 0;
 
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
-        uart_wdata <= 32'b0;
-        cpu_data_avai <= 1'b0;
     end
 end
 
@@ -328,57 +327,52 @@ async_transmitter #(.ClkFrequency(25000000),.Baud(9600))
         .TxD_data(ext_uart_tx)        
     );
 
+//uart read 
 always @(posedge clk_10M) begin 
     if (reset_of_clk10M) begin
         ext_uart_buffer <= 8'b0;
-        ext_uart_avai <= 1'b0;
+        ext_uart_clear <= 0;
     end
     else if(ext_uart_ready)begin
         ext_uart_buffer <= ext_uart_rx;
-        ext_uart_avai <= 1'b1;
+        ext_uart_clear <= 0;
     end 
-    else if(data_sram_addr == 32'hbfd003f8 && (data_sram_en & ~(|data_sram_wen)) && ext_uart_avai)begin 
-        ext_uart_avai <= 1'b0;
-    end
-    else begin end
-end
-
-always @(posedge clk_10M) begin 
-     if (reset_of_clk10M) begin
-        ext_uart_tx <= 0;
-        ext_uart_start <= 0;
-    end
-    else if(!ext_uart_busy && cpu_data_avai)begin 
-        ext_uart_tx <= uart_wdata[7:0];
-        ext_uart_start <= 1'b1;
-    end 
-    else begin 
-        ext_uart_start <= 0;
-    end
-end
-
-always @(negedge clk_10M)begin
-    if(reset_of_clk10M) begin
-        ext_uart_clear_r <= 0;
+    else if(already_read)begin
+        ext_uart_clear <= 1'b1;
     end
     else begin
-        if(already_read && ext_uart_clear_r == 0)begin
-            ext_uart_clear_r <= 1'b1;
-        end
-        else if(ext_uart_clear_r == 1'b1)begin
-            ext_uart_clear_r <= 0;
-        end
-        else begin end
-    end
-end
-
-always @(posedge clk_10M)begin
-    if(reset_of_clk10M) begin
         ext_uart_clear <= 0;
     end
-    else begin
-        ext_uart_clear <= ext_uart_clear_r;
-    end
 end
+//uart clear signal
+//always @(negedge clk_10M)begin
+//    if(reset_of_clk10M) begin
+//        ext_uart_clear_r <= 0;
+//    end
+//    else begin
+//        if(already_read && ext_uart_clear_r == 0)begin
+//            ext_uart_clear_r <= 1'b1;
+//        end
+//        else if(ext_uart_clear_r == 1'b1)begin
+//            ext_uart_clear_r <= 0;
+//        end
+//        else begin end
+//    end
+//end
+
+//uart write
+//always @(posedge clk_10M) begin 
+//     if (reset_of_clk10M) begin
+//        ext_uart_tx <= 0;
+//        ext_uart_start <= 0;
+//    end
+//    else if((~ext_uart_busy) && data_sram_addr == 32'hBFD003F8 && (data_sram_en & (|data_sram_wen)))begin 
+//        ext_uart_tx <= data_sram_wdata[7:0];
+//        ext_uart_start <= 1'b1;
+//    end 
+//    else begin 
+//        ext_uart_start <= 0;
+//    end
+//end
 
 endmodule
