@@ -64,10 +64,9 @@ pll_example clock_gen
   // Clock out ports
   .clk_out1(clk_10M), 
   .clk_out2(clk_20M), 
-  // Status and control signals
+//   Status and control signals
   .reset(reset_btn), 
-  .locked(locked)    
-                     
+  .locked(locked)                   
  );
 
 reg reset_of_clk10M;
