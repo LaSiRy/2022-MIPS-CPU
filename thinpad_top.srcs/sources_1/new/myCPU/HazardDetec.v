@@ -56,18 +56,18 @@ module HazardDetec(
          data_hazard<=1'b1;
          control_hazard<=1'b1;
         end
-        else if(IDEX_MR|IDEX_MW|EXpreMEM_MR|EXpreMEM_MW)begin
+        // else if(IDEX_MR|IDEX_MW|EXpreMEM_MR|EXpreMEM_MW)begin
+        //  data_hazard<=0;
+        //  control_hazard<=0;//lw-use
+        // end
+        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
-        // else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
-        //  data_hazard<=0;
-        //  control_hazard<=0;//lw-use
-        // end
-        // else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
-        //  data_hazard<=0;
-        //  control_hazard<=0;//lw-use
-        // end
+        else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-use
+        end
         else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
