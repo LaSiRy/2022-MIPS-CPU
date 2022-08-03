@@ -20,19 +20,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw-lwÌø×ªÖ¸ÁîĞèÒªnop
+module HazardDetec(
     input wire rst,
     //Date Hazard
     input wire[4:0]IFID_rs1,
     input wire[4:0]IFID_rs2,
-    input wire IDEX_MR,//Ç°ÃæÊÇ·ñÎªlwĞÍÖ¸Áî
-    input wire IDEX_MW,//Ç°ÃæÊÇ·ñÎªswĞÍÖ¸Áî
-    input wire IFID_sw,//ºóÃæÊÇ·ñÎªswĞÍÖ¸Áî
-    input wire IFID_lw,//ºóÃæÊÇ·ñÊÇlwÖ¸Áî
+    input wire IDEX_MR,
+    input wire IDEX_MW,
+    input wire IFID_sw,
+    input wire IFID_lw,
     input wire[4:0]IDEX_rd,
     input wire[4:0]EXpreMEM_rd,//only used in ... sw 
     input wire[4:0]preMEM_rd,//only used in ... sw 
     input wire EXpreMEM_MR,
+    input wire EXpreMEM_MW,
     //Control Hazard
     input wire IFID_Branch,
     input wire IDEX_Branch,
@@ -40,10 +41,10 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
     input wire IDEX_Jump, 
     input wire EXpreMEM_Branch,
     input wire preMEM_Branch,
-    //Output£¬ÎªÍ³Ò»£¬ÓĞHazardÊ±°ÑÏà¹ØĞÅºÅÖÃ0
-    output wire PCWen,//1:¿ÉĞ´
-    output wire IFIDWen,//1£º¿ÉĞ´
-    output wire Contrl_zero//1:²»¸Ä±ä 0:½«IDEXËùÓĞ¶ÁĞ´ĞÅºÅÖÃÁã
+    //Outputï¿½ï¿½ÎªÍ³Ò»ï¿½ï¿½ï¿½ï¿½HazardÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½0
+    output wire PCWen,//1:ï¿½ï¿½Ğ´
+    output wire IFIDWen,//1ï¿½ï¿½ï¿½ï¿½Ğ´
+    output wire Contrl_zero//1:ï¿½ï¿½ï¿½Ä±ï¿½ 0:ï¿½ï¿½IDEXï¿½ï¿½ï¿½Ğ¶ï¿½Ğ´ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½
     );
     reg data_hazard;
     reg control_hazard;
@@ -55,14 +56,18 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
          data_hazard<=1'b1;
          control_hazard<=1'b1;
         end
-        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
+        else if(IDEX_MR|IDEX_MW|EXpreMEM_MR|EXpreMEM_MW)begin
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
-        else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
-         data_hazard<=0;
-         control_hazard<=0;//lw-use
-        end
+        // else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
+        //  data_hazard<=0;
+        //  control_hazard<=0;//lw-use
+        // end
+        // else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
+        //  data_hazard<=0;
+        //  control_hazard<=0;//lw-use
+        // end
         else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
@@ -83,10 +88,6 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
          data_hazard<=0;
          control_hazard<=0; //xxx-lw
         end 
-//        else if(IFID_Branch|IDEX_Branch|IFID_Jump|IDEX_Jump|EXpreMEM_Branch|preMEM_Branch)begin//
-//         data_hazard=0;
-//         control_hazard=1'b1;
-//        end
         else if(EXpreMEM_Branch|preMEM_Branch)begin//
          data_hazard<=0;
          control_hazard<=1'b1;

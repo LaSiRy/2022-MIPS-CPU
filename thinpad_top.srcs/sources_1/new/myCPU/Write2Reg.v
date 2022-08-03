@@ -32,8 +32,8 @@ module Write2Reg(
     wire [31:0]PC_8 = pc + 4'b1000;
   always @(*)begin
     case(MemtoReg)
-    3'd0:res <= ALU;
-    3'd1:begin
+    2'd0:res <= ALU;
+    2'd1:begin
         if(mem_op==`mem_sel_LW)
             res <= Mem;
         else if(mem_op==`mem_sel_LB)begin
@@ -47,8 +47,8 @@ module Write2Reg(
         end
         else begin res <= 32'b0;  end
        end
-    3'd2:res <= PC_8;
-    3'd3:res <= lui;
+    2'd2:res <= PC_8;
+    2'd3:res <= lui;
     default:res <= 32'b0;
   endcase
     end
