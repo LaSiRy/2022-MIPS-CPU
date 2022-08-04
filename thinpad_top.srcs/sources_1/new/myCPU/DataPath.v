@@ -208,15 +208,15 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
     //IF -> ID
      IFID_pc          <=    (IFIDWen)? pre_pc: IFID_pc;
      IFID_inst        <=    (IFIDWen)? inst_field: (Ctrl_Z?`NOP_INST:IFID_inst);
-     IFID_is_Delayslot<=    (isBranch | is_jl | is_jr | IDEX_branch | IDEX_isjl | IDEX_isjr)? 1'b1:0;
+     IFID_is_Delayslot<=    (IDEX_branch | IDEX_isjl | IDEX_isjr)? 1'b1:0;
      rs1              <=    (IFIDWen)? inst_field[25:21]: Ctrl_Z? 0:IFID_inst[25:21];
      rs2              <=    (IFIDWen)? inst_field[20:16]: Ctrl_Z? 0:IFID_inst[20:16];
      rd               <=    IFIDWen? (inst_con? inst_field[20:16]: ~inst_j? inst_field[15:11]: 5'd31):
                             Ctrl_Z? 0: IFID_con? IFID_inst[20:16]: ~IFID_j? IFID_inst[15:11]: 5'd31;
     //ID -> EX
-      IDEX_branch     <=    ~IFID_is_Delayslot? isBranch:IDEX_B_con | EXpreMEM_branch? 0:isBranch;
-      IDEX_isjl       <=    ~IFID_is_Delayslot? is_jl:IDEX_B_con | EXpreMEM_branch? 0:is_jl;
-      IDEX_isjr       <=    ~IFID_is_Delayslot? is_jr:IDEX_B_con | EXpreMEM_branch? 0:is_jr;
+      IDEX_branch     <=    ~IFID_is_Delayslot? isBranch: EXpreMEM_branch? 0:isBranch;
+      IDEX_isjl       <=    ~IFID_is_Delayslot? is_jl: EXpreMEM_branch? 0:is_jl;
+      IDEX_isjr       <=    ~IFID_is_Delayslot? is_jr: EXpreMEM_branch? 0:is_jr;
       IDEX_inst       <=    (Ctrl_Z)? IFID_inst:`NOP_INST;
       IDEX_is_Delayslot<=   IFID_is_Delayslot;
       IDEX_WB         <=    RegWrite;
@@ -234,15 +234,15 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
     //EX -> preMEM
       EXpreMEM_rd     <=    IDEX_rd;
       EXpreMEM_rs2    <=    IDEX_rs2_val;
-      EXpreMEM_branch <=    ~IDEX_is_Delayslot? IDEX_B_con: (EXpreMEM_branch | preMEM_branch)? 0: IDEX_B_con;
-      EXpreMEM_WB     <=    ~IDEX_is_Delayslot? IDEX_WB: (EXpreMEM_branch | preMEM_branch)? 0:IDEX_WB;
+      EXpreMEM_branch <=    ~IDEX_is_Delayslot? IDEX_B_con: (preMEM_branch)? 0: IDEX_B_con;
+      EXpreMEM_WB     <=    ~IDEX_is_Delayslot? IDEX_WB: (preMEM_branch)? 0:IDEX_WB;
       EXpreMEM_Alu    <=    ALU_res;
 //      EXpreMEM_isUart <=    (ALU_res == 32'hbfd003f8 || ALU_res == 32'hbfd003fc)? 1'b1:0;
       EXpreMEM_inst   <=    IDEX_inst;
       EXpreMEM_lui    <=    IDEX_Imm;
       EXpreMEM_pc     <=    IDEX_pc;
       EXpreMEM_valid  <=    IDEX_valid;
-      EXpreMEM_MemRW  <=    ~IDEX_is_Delayslot? IDEX_MemRW: EXpreMEM_branch? 0:preMEM_branch? 0:IDEX_MemRW;
+      EXpreMEM_MemRW  <=    ~IDEX_is_Delayslot? IDEX_MemRW: preMEM_branch? 0:IDEX_MemRW;
       EXpreMEM_mem_op <=    IDEX_mem_op;
       EXpreMEM_RegWrite<=   IDEX_RegWrite;
     //preMEM -> MEM
@@ -282,6 +282,9 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
 
 HazardDetec HD(//???????forwarding???xxx-sd, xxx-ld, ld-use,?????????nop
     .rst(rst),
+    //structure hazard
+    .EXpreMEM_addr(ALU_res),
+    .MemAddr(EXpreMEM_Alu),
     //Date Hazard
     .IFID_rs1(rs1),
     .IFID_rs2(rs2),

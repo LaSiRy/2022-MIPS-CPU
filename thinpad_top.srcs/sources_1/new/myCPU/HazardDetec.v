@@ -22,6 +22,9 @@
 
 module HazardDetec(
     input wire rst,
+    //structural hazard detection
+    input wire [31:0]EXpreMEM_addr,
+    input wire [31:0]MemAddr,
     //Date Hazard
     input wire[4:0]IFID_rs1,
     input wire[4:0]IFID_rs2,
@@ -56,14 +59,22 @@ module HazardDetec(
          data_hazard<=1'b1;
          control_hazard<=1'b1;
         end
-        // else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
-        //  data_hazard<=0;
-        //  control_hazard<=0;//lw-use
-        // end
-        // else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
-        //  data_hazard<=0;
-        //  control_hazard<=0;//lw-use
-        // end
+        else if(EXpreMEM_addr >= 32'h80000000 && EXpreMEM_addr <= 32'h803fffff && (IDEX_MR | IDEX_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structural hazard
+        end
+        else if(MemAddr >= 32'h80000000 && MemAddr <= 32'h803fffff && (EXpreMEM_MR | EXpreMEM_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structural hazard
+        end
+        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IDEX_MR)begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-use
+        end
+        else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&EXpreMEM_MR)begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-use
+        end
         else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
@@ -84,10 +95,10 @@ module HazardDetec(
         //  data_hazard<=0;
         //  control_hazard<=0; //xxx-lw
         // end 
-        else if(IDEX_MR|IDEX_MW|EXpreMEM_MR|EXpreMEM_MW)begin
-         data_hazard<=0;
-         control_hazard<=0;//lw-use
-        end
+        // else if(IDEX_MR|IDEX_MW|EXpreMEM_MR|EXpreMEM_MW)begin
+        //  data_hazard<=0;
+        //  control_hazard<=0;//lw-use
+        // end
         else if(EXpreMEM_Branch|preMEM_Branch)begin//
          data_hazard<=0;
          control_hazard<=1'b1;
