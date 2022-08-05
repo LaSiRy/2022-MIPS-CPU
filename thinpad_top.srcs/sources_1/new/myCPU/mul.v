@@ -25,7 +25,9 @@ module mul (
     input wire[31:0]B,
     output wire[31:0] res
     );
-    wire [31:0]P;
-    assign res = P;
- multi mul(.A(A),.B(B),.P(P));
+    reg [63:0]P;
+    assign res = P[31:0];
+    always @* begin
+     P <= ($signed(A)) * ($signed(B));
+    end
 endmodule
