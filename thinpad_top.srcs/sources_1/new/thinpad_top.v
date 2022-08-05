@@ -228,7 +228,7 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
-        base_ram_we_n_r <= (~(data_sram_en & (|data_sram_wen))) | baseram_stop[0];;      
+        base_ram_we_n_r <= (~(data_sram_en & (|data_sram_wen))) | baseram_stop[0];      
         ext_ram_we_n_r <= 1'b1;  
 
         ext_uart_tx <= 0;
