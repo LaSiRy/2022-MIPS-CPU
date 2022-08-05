@@ -1,18 +1,18 @@
 #Clock
-set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M] ;#50MHz main clock in
-set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592] ;#11.0592MHz clock for UART
+set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M]
+set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592]
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_11M0592_IBUF]
 
 create_clock -period 20.000 -name clk_50M -waveform {0.000 10.000} [get_ports clk_50M]
 create_clock -period 90.422 -name clk_11M0592 -waveform {0.000 45.211} [get_ports clk_11M0592]
 
 #Touch Button
-set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports touch_btn[0]] ;#BTN1
-set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports touch_btn[1]] ;#BTN2
-set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports touch_btn[2]] ;#BTN3
-set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports touch_btn[3]] ;#BTN4
-set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn] ;#BTN5
-set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn] ;#BTN6
+set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[0]}]
+set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports {touch_btn[1]}]
+set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports {touch_btn[2]}]
+set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[3]}]
+set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn]
+set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn]
 
 #required if touch button used as manual clock source
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clock_btn_IBUF]
@@ -26,8 +26,8 @@ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets reset_btn_IBUF]
 #set_property -dict {PACKAGE_PIN L15 IOSTANDARD LVCMOS33} [get_ports {uart_dataready}]
 
 #Ext serial
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd] ;#GPIO5
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd] ;#GPIO6
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd]
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd]
 
 #Digital Video
 set_property -dict {PACKAGE_PIN H22 IOSTANDARD LVCMOS33} [get_ports video_clk]
@@ -115,7 +115,7 @@ set_property -dict {PACKAGE_PIN T5 IOSTANDARD LVCMOS33} [get_ports {dip_sw[29]}]
 set_property -dict {PACKAGE_PIN R6 IOSTANDARD LVCMOS33} [get_ports {dip_sw[30]}]
 set_property -dict {PACKAGE_PIN R2 IOSTANDARD LVCMOS33} [get_ports {dip_sw[31]}]
 
-set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33}  [get_ports {flash_a[0]}]
+set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports {flash_a[0]}]
 set_property -dict {PACKAGE_PIN H9 IOSTANDARD LVCMOS33} [get_ports {flash_a[1]}]
 set_property -dict {PACKAGE_PIN H8 IOSTANDARD LVCMOS33} [get_ports {flash_a[2]}]
 set_property -dict {PACKAGE_PIN G9 IOSTANDARD LVCMOS33} [get_ports {flash_a[3]}]
@@ -156,12 +156,12 @@ set_property -dict {PACKAGE_PIN B2 IOSTANDARD LVCMOS33} [get_ports {flash_d[13]}
 set_property -dict {PACKAGE_PIN A3 IOSTANDARD LVCMOS33} [get_ports {flash_d[14]}]
 set_property -dict {PACKAGE_PIN A4 IOSTANDARD LVCMOS33} [get_ports {flash_d[15]}]
 
-set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33}  [get_ports flash_byte_n]
-set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n  ]
-set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33}  [get_ports flash_oe_n  ]
-set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n  ]
-set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen  ]
-set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33}  [get_ports flash_we_n  ]
+set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33} [get_ports flash_byte_n]
+set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n]
+set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33} [get_ports flash_oe_n]
+set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n]
+set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen]
+set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33} [get_ports flash_we_n]
 
 set_property -dict {PACKAGE_PIN T19 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[0]}]
 set_property -dict {PACKAGE_PIN V18 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[1]}]
@@ -287,3 +287,39 @@ set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
+
+connect_debug_port u_ila_0/probe0 [get_nets [list {debug_wb_pc_OBUF[0]} {debug_wb_pc_OBUF[1]} {debug_wb_pc_OBUF[2]} {debug_wb_pc_OBUF[3]} {debug_wb_pc_OBUF[4]} {debug_wb_pc_OBUF[5]} {debug_wb_pc_OBUF[6]} {debug_wb_pc_OBUF[7]} {debug_wb_pc_OBUF[8]} {debug_wb_pc_OBUF[9]} {debug_wb_pc_OBUF[10]} {debug_wb_pc_OBUF[11]} {debug_wb_pc_OBUF[12]} {debug_wb_pc_OBUF[13]} {debug_wb_pc_OBUF[14]} {debug_wb_pc_OBUF[15]} {debug_wb_pc_OBUF[16]} {debug_wb_pc_OBUF[17]} {debug_wb_pc_OBUF[18]} {debug_wb_pc_OBUF[19]} {debug_wb_pc_OBUF[20]} {debug_wb_pc_OBUF[21]} {debug_wb_pc_OBUF[22]} {debug_wb_pc_OBUF[23]} {debug_wb_pc_OBUF[24]} {debug_wb_pc_OBUF[25]} {debug_wb_pc_OBUF[26]} {debug_wb_pc_OBUF[27]} {debug_wb_pc_OBUF[28]} {debug_wb_pc_OBUF[29]} {debug_wb_pc_OBUF[30]} {debug_wb_pc_OBUF[31]}]]
+connect_debug_port u_ila_0/probe1 [get_nets [list {debug_wb_rf_wdata_OBUF[0]} {debug_wb_rf_wdata_OBUF[1]} {debug_wb_rf_wdata_OBUF[2]} {debug_wb_rf_wdata_OBUF[3]} {debug_wb_rf_wdata_OBUF[4]} {debug_wb_rf_wdata_OBUF[5]} {debug_wb_rf_wdata_OBUF[6]} {debug_wb_rf_wdata_OBUF[7]} {debug_wb_rf_wdata_OBUF[8]} {debug_wb_rf_wdata_OBUF[9]} {debug_wb_rf_wdata_OBUF[10]} {debug_wb_rf_wdata_OBUF[11]} {debug_wb_rf_wdata_OBUF[12]} {debug_wb_rf_wdata_OBUF[13]} {debug_wb_rf_wdata_OBUF[14]} {debug_wb_rf_wdata_OBUF[15]} {debug_wb_rf_wdata_OBUF[16]} {debug_wb_rf_wdata_OBUF[17]} {debug_wb_rf_wdata_OBUF[18]} {debug_wb_rf_wdata_OBUF[19]} {debug_wb_rf_wdata_OBUF[20]} {debug_wb_rf_wdata_OBUF[21]} {debug_wb_rf_wdata_OBUF[22]} {debug_wb_rf_wdata_OBUF[23]} {debug_wb_rf_wdata_OBUF[24]} {debug_wb_rf_wdata_OBUF[25]} {debug_wb_rf_wdata_OBUF[26]} {debug_wb_rf_wdata_OBUF[27]} {debug_wb_rf_wdata_OBUF[28]} {debug_wb_rf_wdata_OBUF[29]} {debug_wb_rf_wdata_OBUF[30]} {debug_wb_rf_wdata_OBUF[31]}]]
+connect_debug_port u_ila_0/probe2 [get_nets [list {debug_wb_rf_wen_OBUF[0]} {debug_wb_rf_wen_OBUF[1]} {debug_wb_rf_wen_OBUF[2]} {debug_wb_rf_wen_OBUF[3]}]]
+connect_debug_port u_ila_0/probe3 [get_nets [list {debug_wb_rf_wnum_OBUF[0]} {debug_wb_rf_wnum_OBUF[1]} {debug_wb_rf_wnum_OBUF[2]} {debug_wb_rf_wnum_OBUF[3]} {debug_wb_rf_wnum_OBUF[4]}]]
+
+create_debug_core u_ila_0 ila
+set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
+set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
+set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 1024 [get_debug_cores u_ila_0]
+set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
+set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
+set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
+set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
+set_property port_width 1 [get_debug_ports u_ila_0/clk]
+connect_debug_port u_ila_0/clk [get_nets [list clock_gen/inst/clk_out1]]
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
+set_property port_width 32 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {mycpu/debug_wb_pc[0]} {mycpu/debug_wb_pc[1]} {mycpu/debug_wb_pc[2]} {mycpu/debug_wb_pc[3]} {mycpu/debug_wb_pc[4]} {mycpu/debug_wb_pc[5]} {mycpu/debug_wb_pc[6]} {mycpu/debug_wb_pc[7]} {mycpu/debug_wb_pc[8]} {mycpu/debug_wb_pc[9]} {mycpu/debug_wb_pc[10]} {mycpu/debug_wb_pc[11]} {mycpu/debug_wb_pc[12]} {mycpu/debug_wb_pc[13]} {mycpu/debug_wb_pc[14]} {mycpu/debug_wb_pc[15]} {mycpu/debug_wb_pc[16]} {mycpu/debug_wb_pc[17]} {mycpu/debug_wb_pc[18]} {mycpu/debug_wb_pc[19]} {mycpu/debug_wb_pc[20]} {mycpu/debug_wb_pc[21]} {mycpu/debug_wb_pc[22]} {mycpu/debug_wb_pc[23]} {mycpu/debug_wb_pc[24]} {mycpu/debug_wb_pc[25]} {mycpu/debug_wb_pc[26]} {mycpu/debug_wb_pc[27]} {mycpu/debug_wb_pc[28]} {mycpu/debug_wb_pc[29]} {mycpu/debug_wb_pc[30]} {mycpu/debug_wb_pc[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
+set_property port_width 4 [get_debug_ports u_ila_0/probe1]
+connect_debug_port u_ila_0/probe1 [get_nets [list {mycpu/debug_wb_rf_wen[0]} {mycpu/debug_wb_rf_wen[1]} {mycpu/debug_wb_rf_wen[2]} {mycpu/debug_wb_rf_wen[3]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
+set_property port_width 5 [get_debug_ports u_ila_0/probe2]
+connect_debug_port u_ila_0/probe2 [get_nets [list {mycpu/debug_wb_rf_wnum[0]} {mycpu/debug_wb_rf_wnum[1]} {mycpu/debug_wb_rf_wnum[2]} {mycpu/debug_wb_rf_wnum[3]} {mycpu/debug_wb_rf_wnum[4]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
+set_property port_width 32 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {mycpu/debug_wb_rf_wdata[0]} {mycpu/debug_wb_rf_wdata[1]} {mycpu/debug_wb_rf_wdata[2]} {mycpu/debug_wb_rf_wdata[3]} {mycpu/debug_wb_rf_wdata[4]} {mycpu/debug_wb_rf_wdata[5]} {mycpu/debug_wb_rf_wdata[6]} {mycpu/debug_wb_rf_wdata[7]} {mycpu/debug_wb_rf_wdata[8]} {mycpu/debug_wb_rf_wdata[9]} {mycpu/debug_wb_rf_wdata[10]} {mycpu/debug_wb_rf_wdata[11]} {mycpu/debug_wb_rf_wdata[12]} {mycpu/debug_wb_rf_wdata[13]} {mycpu/debug_wb_rf_wdata[14]} {mycpu/debug_wb_rf_wdata[15]} {mycpu/debug_wb_rf_wdata[16]} {mycpu/debug_wb_rf_wdata[17]} {mycpu/debug_wb_rf_wdata[18]} {mycpu/debug_wb_rf_wdata[19]} {mycpu/debug_wb_rf_wdata[20]} {mycpu/debug_wb_rf_wdata[21]} {mycpu/debug_wb_rf_wdata[22]} {mycpu/debug_wb_rf_wdata[23]} {mycpu/debug_wb_rf_wdata[24]} {mycpu/debug_wb_rf_wdata[25]} {mycpu/debug_wb_rf_wdata[26]} {mycpu/debug_wb_rf_wdata[27]} {mycpu/debug_wb_rf_wdata[28]} {mycpu/debug_wb_rf_wdata[29]} {mycpu/debug_wb_rf_wdata[30]} {mycpu/debug_wb_rf_wdata[31]}]]
+set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
+set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
+connect_debug_port dbg_hub/clk [get_nets clk_10M]

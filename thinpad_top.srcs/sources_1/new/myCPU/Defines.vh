@@ -158,6 +158,7 @@
     output wire dbg_IdEx_mem_wen, \
     output wire dbg_IdEx_mem_ren, \
     output wire dbg_IdEx_is_branch, \
+    output wire dbg_IdEx_is_jump,\
     output wire dbg_IdEx_is_jal, \
     output wire dbg_IdEx_is_jalr, \
     output wire [3:0] dbg_IdEx_alu_ctrl, \
@@ -235,6 +236,7 @@
     assign dbg_IdEx_mem_wen = IDEX_MemRW[0]; \
     assign dbg_IdEx_mem_ren = IDEX_MemRW[1]; \
     assign dbg_IdEx_is_branch = IDEX_branch; \
+    assign dbg_IdEx_is_jump = res_comp;\
     assign dbg_IdEx_is_jal = IDEX_isjl; \
     assign dbg_IdEx_is_jalr = IDEX_isjr; \
     assign dbg_IdEx_alu_ctrl = IDEX_Aluop; \
@@ -280,6 +282,7 @@
     wire dbg_IdEx_mem_wen; \
     wire dbg_IdEx_mem_ren; \
     wire dbg_IdEx_is_branch; \
+    wire dbg_IdEx_is_jump; \
     wire dbg_IdEx_is_jal; \
     wire dbg_IdEx_is_jalr; \
     wire [3:0] dbg_IdEx_alu_ctrl; \
@@ -325,6 +328,7 @@
     .dbg_IdEx_mem_wen(dbg_IdEx_mem_wen), \
     .dbg_IdEx_mem_ren(dbg_IdEx_mem_ren), \
     .dbg_IdEx_is_branch(dbg_IdEx_is_branch), \
+    .dbg_IdEx_is_jump(dbg_IdEx_is_jump),\
     .dbg_IdEx_is_jal(dbg_IdEx_is_jal), \
     .dbg_IdEx_is_jalr(dbg_IdEx_is_jalr), \
     .dbg_IdEx_alu_ctrl(dbg_IdEx_alu_ctrl), \

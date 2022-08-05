@@ -24,6 +24,8 @@ module Alu(
     input wire[31:0]b_val,
     input wire[3:0]ctrl,
     input wire[2:0]comp_ctrl,
+    input wire [1:0]mem_op,
+    output wire [3:0]mem_sel,
     output wire[31:0]result,
     output wire res_comp
     );
@@ -38,8 +40,10 @@ module Alu(
     wire[31:0]res_sra;//sra
     wire [31:0]res_add;//add
     wire [31:0]res_sub;//sub
+    wire [31:0]res;
+    assign result = res;
     mux8to1_32 U0(.I0(res_add),.I1(res_sub),.I2(res_sll),.I3({31'b0,res_slt}),.I4(res_mul),
-    .I5(res_xor),.I6(res_srl),.I7(res_sra),.I8(res_OR),.I9(res_AND),.select(ctrl),.res(result));
+    .I5(res_xor),.I6(res_srl),.I7(res_sra),.I8(res_OR),.I9(res_AND),.select(ctrl),.res(res));
     add32 U1(.A(a_val),.B(b_val),.res(res_add)); //addu£¬ÎŞÒç³öÒì³£
     sub32 U2(.A(a_val),.B(b_val),.res(res_sub));
     and32 U3(.A(a_val),.B(b_val),.res(res_AND));
@@ -51,4 +55,5 @@ module Alu(
     mul U9(.A(a_val),.B(b_val),.res(res_mul));
     sra U10(.A(a_val),.B(b_val),.res(res_sra));    
     Comparator U11(.a_val(a_val),.b_val(b_val),.ctrl(comp_ctrl),.result(res_comp));
+    mem_sel memsel(.addr(res[1:0]),.mem_op(mem_op),.mem_sel(mem_sel));
 endmodule

@@ -1,4 +1,5 @@
 `default_nettype none
+//`include "Defines.vh"
 module thinpad_top(
     input wire clk_50M,           
     input wire clk_11M0592,       
@@ -31,11 +32,11 @@ module thinpad_top(
     
 //debug
 //    `DBG_Core_Outputs
-//    output wire [31:0] debug_wb_pc,
-//    output wire [3:0] debug_wb_rf_wen,
-//    output wire [4:0] debug_wb_rf_wnum,
-//    output wire [31:0] debug_wb_rf_wdata,
-//
+// output wire [31:0] debug_wb_pc,
+// output wire [3:0] debug_wb_rf_wen,
+// output wire [4:0] debug_wb_rf_wnum,
+// output wire [31:0] debug_wb_rf_wdata,
+
     
     output wire [22:0]flash_a,      
     inout  wire [15:0]flash_d,      
@@ -102,7 +103,7 @@ myCPU mycpu(
 //    .debug_wb_rf_wen(debug_wb_rf_wen),
 //    .debug_wb_rf_wnum(debug_wb_rf_wnum),
 //    .debug_wb_rf_wdata(debug_wb_rf_wdata),
-    //
+    
     .debug_wb_pc(),                
     .debug_wb_rf_wen(),        
     .debug_wb_rf_wnum(),      
@@ -181,14 +182,12 @@ always @ (posedge clk_10M) begin
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= 1'b1;
         base_ram_oe_n_r <= 1'b1;
-        base_ram_we_n_r <= 1'b1;
         base_ram_data_r <= 32'b0;
 
         ext_ram_addr_r <= 19'b0;
         ext_ram_be_n_r <= 4'b0;
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
         ext_uart_tx <= 0;
@@ -198,19 +197,17 @@ always @ (posedge clk_10M) begin
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
     end
-    else if (data_sram_addr >=32'h80000000 && data_sram_addr <= 32'h803fffff && data_sram_en) begin
-        base_ram_addr_r <= data_sram_addr[21:2];
+    else if (data_sram_addr >= 32'h80000000 && data_sram_addr <= 32'h803fffff && data_sram_en) begin
+        base_ram_addr_r <= data_sram_addr[21:2];                    
         base_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
-        base_ram_ce_n_r <= ~data_sram_en;
-        base_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
-        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
-        base_ram_data_r <= data_sram_wdata;
+        base_ram_ce_n_r <= ~data_sram_en;                           
+        base_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));   
+        base_ram_data_r <= data_sram_wdata;                         
 
         ext_ram_addr_r <= 19'b0;
         ext_ram_be_n_r <= 4'b0;
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;  
         ext_ram_data_r <= 32'b0;
         
         ext_uart_tx <= 0;
@@ -225,14 +222,12 @@ always @ (posedge clk_10M) begin
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
         base_ram_oe_n_r <= ~inst_sram_en ;
-        base_ram_we_n_r <= 1'b1;
         base_ram_data_r <= inst_sram_wdata;
         
         ext_ram_addr_r <= data_sram_addr[21:2];
         ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
         ext_ram_ce_n_r <= ~data_sram_en;
         ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
-        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
         ext_ram_data_r <= data_sram_wdata;
         
         ext_uart_tx <= 0;
@@ -247,14 +242,12 @@ always @ (posedge clk_10M) begin
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
         base_ram_oe_n_r <= ~inst_sram_en ;
-        base_ram_we_n_r <= 1'b1;
         base_ram_data_r <= inst_sram_wdata;
       
         ext_ram_addr_r <= 19'b0;
         ext_ram_be_n_r <= 4'b0;
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
         ext_uart_tx <= 0;
@@ -269,14 +262,12 @@ always @ (posedge clk_10M) begin
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
         base_ram_oe_n_r <= ~inst_sram_en ;
-        base_ram_we_n_r <= 1'b1;
         base_ram_data_r <= inst_sram_wdata;
        
         ext_ram_addr_r <= 19'b0;
         ext_ram_be_n_r <= 4'b0;
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
         ext_uart_tx <= (|data_sram_wen)? data_sram_wdata[7:0]:0;
@@ -291,14 +282,12 @@ always @ (posedge clk_10M) begin
         base_ram_be_n_r <= 4'b0;
         base_ram_ce_n_r <= ~inst_sram_en;
         base_ram_oe_n_r <= ~inst_sram_en ;
-        base_ram_we_n_r <= 1'b1;
         base_ram_data_r <= inst_sram_wdata;
       
         ext_ram_addr_r <= 19'b0;
         ext_ram_be_n_r <= 4'b0;
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
         ext_uart_tx <= 0;
@@ -307,6 +296,33 @@ always @ (posedge clk_10M) begin
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
+    end
+end
+
+always @ (negedge clk_10M) begin
+    if (reset_of_clk10M) begin
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
+    end
+    else if (data_sram_addr >= 32'h80000000 && data_sram_addr <= 32'h803fffff && data_sram_en) begin
+        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));      
+        ext_ram_we_n_r <= 1'b1;  
+    end
+    else if (data_sram_addr >= 32'h80400000 && data_sram_addr <= 32'h807fffff && data_sram_en) begin  
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
+    end
+    else if (data_sram_addr == 32'hBFD003FC && data_sram_en) begin // 
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
+    end
+    else if (data_sram_addr == 32'hBFD003F8 && data_sram_en) begin        
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
+    end
+    else begin    
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
     end
 end
 
@@ -337,13 +353,23 @@ always @(posedge clk_10M) begin
         ext_uart_buffer <= ext_uart_rx;
         ext_uart_clear <= 0;
     end 
-    else if(already_read)begin
+    else if(already_read && ext_uart_clear == 0)begin
         ext_uart_clear <= 1'b1;
     end
     else begin
         ext_uart_clear <= 0;
     end
 end
+
+
+
+// wire[7:0] number;
+// SEG7_LUT segL(.oSEG1(dpy0), .iDIG(number[3:0])); //dpy0是低位数码管
+// SEG7_LUT segH(.oSEG1(dpy1), .iDIG(number[7:4])); //dpy1是高位数码管
+// reg [7:0] wdata_r;
+
+// assign number = wdata_r;
+
 //uart clear signal
 //always @(negedge clk_10M)begin
 //    if(reset_of_clk10M) begin

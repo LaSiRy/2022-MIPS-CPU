@@ -30,6 +30,7 @@ module Write2Reg(
     output reg [31:0]res
     );
     wire [31:0]PC_8 = pc + 4'b1000;
+    wire [1:0]addr = ALU[1:0];
   always @(*)begin
     case(MemtoReg)
     2'd0:res <= ALU;
@@ -37,7 +38,7 @@ module Write2Reg(
         if(mem_op==`mem_sel_LW)
             res <= Mem;
         else if(mem_op==`mem_sel_LB)begin
-            case(ALU[1:0])
+            case(addr)
             2'b00:  res <= {{24{Mem[ 7]}}, Mem[7:0]};
             2'b01:  res <= {{24{Mem[15]}}, Mem[15:8]};
             2'b10:  res <= {{24{Mem[23]}}, Mem[23:16]};

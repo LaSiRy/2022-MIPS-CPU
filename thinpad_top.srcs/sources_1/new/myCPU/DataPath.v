@@ -85,11 +85,12 @@ module DataPath(
   reg [31:0]EXpreMEM_inst;//inst
   reg EXpreMEM_is_Delayslot;
   reg [1:0]EXpreMEM_mem_op;
+  reg [3:0]EXpreMEM_mem_sel;
+  reg [31:0]EXpreMEM_data;
   reg EXpreMEM_branch;
   reg EXpreMEM_WB;
   reg [1:0]EXpreMEM_MemRW;//read+write
   reg [1:0]EXpreMEM_RegWrite;
-  // reg EXpreMEM_isUart;
   reg EXpreMEM_valid;
   //preMEM:
   reg [31:0]preMEM_addr;
@@ -103,8 +104,6 @@ module DataPath(
   reg preMEM_branch;
   reg [1:0]preMEM_MemRW;//read+write
   reg [1:0]preMEM_RegWrite;
-  // reg preMEM_isUart;
-  // reg [31:0]preMEM_Datain;
   reg preMEM_valid;  
   //MEMWB
   reg [4 :0]MEMWB_rd;//rd 5
@@ -137,6 +136,7 @@ module DataPath(
   wire MemW;
   wire MemR;
   wire [1:0]mem_op;
+  wire [3:0]mem_sel_o;
   wire is_jl;
   wire is_jr;
   wire [31:0]rs1_val;
@@ -152,10 +152,6 @@ module DataPath(
   wire [31:0]Alu_rs1;
   wire [31:0]Alu_rs2;
   
-wire IFID_Branch = (IFID_inst[31:26]==`BEQ || IFID_inst[31:26]==`BNE || IFID_inst[31:26]==`BGTZ)?1'b1:0;
-wire IFID_Jump = (IFID_inst[31:26]==`J || IFID_inst[31:26]==`JAL ||
-                (IFID_inst[31:26]==`OP && IFID_inst[5:0]==`OP_JR)||
-                (IFID_inst[31:26]==`OP && IFID_inst[5:0]==`OP_JALR))?1'b1:0;
 wire IFID_sw = (IFID_inst[31:26]==`SW || IFID_inst[31:26]==`SB)?1'b1:0;
 wire IFID_lw = (IFID_inst[31:26]==`LW || IFID_inst[31:26]==`LB)?1'b1:0;
 wire inst_j = inst_field[31:26] == `JAL? 1'b1:0;
@@ -214,9 +210,12 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
      rd               <=    IFIDWen? (inst_con? inst_field[20:16]: ~inst_j? inst_field[15:11]: 5'd31):
                             Ctrl_Z? 0: IFID_con? IFID_inst[20:16]: ~IFID_j? IFID_inst[15:11]: 5'd31;
     //ID -> EX
-      IDEX_branch     <=    ~IFID_is_Delayslot? isBranch: EXpreMEM_branch? 0:isBranch;
-      IDEX_isjl       <=    ~IFID_is_Delayslot? is_jl: EXpreMEM_branch? 0:is_jl;
-      IDEX_isjr       <=    ~IFID_is_Delayslot? is_jr: EXpreMEM_branch? 0:is_jr;
+      IDEX_branch     <=    ~IFID_is_Delayslot? isBranch:EXpreMEM_branch? 0:isBranch;
+      IDEX_isjl       <=    ~IFID_is_Delayslot? is_jl:EXpreMEM_branch? 0:is_jl;
+      IDEX_isjr       <=    ~IFID_is_Delayslot? is_jr:EXpreMEM_branch? 0:is_jr;
+//      IDEX_branch     <=    isBranch;
+//      IDEX_isjl       <=    is_jl;
+//      IDEX_isjr       <=    is_jr;
       IDEX_inst       <=    (Ctrl_Z)? IFID_inst:`NOP_INST;
       IDEX_is_Delayslot<=   IFID_is_Delayslot;
       IDEX_WB         <=    RegWrite;
@@ -234,22 +233,25 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
     //EX -> preMEM
       EXpreMEM_rd     <=    IDEX_rd;
       EXpreMEM_rs2    <=    IDEX_rs2_val;
-      EXpreMEM_branch <=    ~IDEX_is_Delayslot? IDEX_B_con: (preMEM_branch)? 0: IDEX_B_con;
-      EXpreMEM_WB     <=    ~IDEX_is_Delayslot? IDEX_WB: (preMEM_branch)? 0:IDEX_WB;
+      EXpreMEM_data   <=    (IDEX_mem_op == `mem_sel_SB)?{IDEX_rs2_val[7:0],IDEX_rs2_val[7:0],IDEX_rs2_val[7:0],IDEX_rs2_val[7:0]}:
+                            (IDEX_mem_op == `mem_sel_SW)? IDEX_rs2_val:32'b0;
+      EXpreMEM_branch <=    ~IDEX_is_Delayslot? IDEX_B_con: preMEM_branch? 0: IDEX_B_con;
+      EXpreMEM_WB     <=    ~IDEX_is_Delayslot? IDEX_WB: preMEM_branch? 0:IDEX_WB;
+//      EXpreMEM_branch <=    IDEX_B_con;
+//      EXpreMEM_WB     <=    IDEX_WB;
       EXpreMEM_Alu    <=    ALU_res;
-//      EXpreMEM_isUart <=    (ALU_res == 32'hbfd003f8 || ALU_res == 32'hbfd003fc)? 1'b1:0;
       EXpreMEM_inst   <=    IDEX_inst;
       EXpreMEM_lui    <=    IDEX_Imm;
       EXpreMEM_pc     <=    IDEX_pc;
       EXpreMEM_valid  <=    IDEX_valid;
       EXpreMEM_MemRW  <=    ~IDEX_is_Delayslot? IDEX_MemRW: preMEM_branch? 0:IDEX_MemRW;
+//      EXpreMEM_MemRW  <=    IDEX_MemRW;
       EXpreMEM_mem_op <=    IDEX_mem_op;
+      EXpreMEM_mem_sel<=    mem_sel_o;
       EXpreMEM_RegWrite<=   IDEX_RegWrite;
     //preMEM -> MEM
       preMEM_addr     <=    EXpreMEM_Alu;
       preMEM_data     <=    EXpreMEM_rs2;
-//      preMEM_isUart   <=    EXpreMEM_isUart;
-//      preMEM_Datain   <=    Data_in;
       preMEM_rd       <=    EXpreMEM_rd;
       preMEM_branch   <=    EXpreMEM_branch;
       preMEM_WB       <=    EXpreMEM_WB;
@@ -260,8 +262,7 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
       preMEM_mem_op   <=    EXpreMEM_mem_op;
       preMEM_RegWrite <=    EXpreMEM_RegWrite;
     //MEM -> WB
-      MEMWB_rd        <=    preMEM_rd;   
-//      MEMWB_mem       <=    ~preMEM_isUart? Data_in: preMEM_Datain;  
+      MEMWB_rd        <=    preMEM_rd;  
       MEMWB_mem       <=    Data_in;      
       MEMWB_Alu       <=    preMEM_addr;   
       MEMWB_inst      <=    preMEM_inst;      
@@ -276,15 +277,15 @@ assign isRead_data = rst?0:(|EXpreMEM_MemRW);
 //output
   assign PC_out = pc;
   assign dmem_wen = EXpreMEM_MemRW[0];
-  assign Data_out = (EXpreMEM_mem_op==`mem_sel_SB)?{EXpreMEM_rs2[7:0],EXpreMEM_rs2[7:0],EXpreMEM_rs2[7:0],EXpreMEM_rs2[7:0]}:
-                    (EXpreMEM_mem_op==`mem_sel_SW)? EXpreMEM_rs2:32'b0;
+  assign Data_out = EXpreMEM_data;
   assign Din_addr = EXpreMEM_Alu;
+  assign mem_sel = EXpreMEM_mem_sel;
 
-HazardDetec HD(//???????forwarding???xxx-sd, xxx-ld, ld-use,?????????nop
+HazardDetec HD(
     .rst(rst),
-    //structure hazard
+    //Structure Hazard
     .EXpreMEM_addr(ALU_res),
-    .MemAddr(EXpreMEM_Alu),
+    .MEM_addr(EXpreMEM_Alu),
     //Date Hazard
     .IFID_rs1(rs1),
     .IFID_rs2(rs2),
@@ -297,37 +298,36 @@ HazardDetec HD(//???????forwarding???xxx-sd, xxx-ld, ld-use,?????????nop
     .preMEM_rd(preMEM_rd),
     .EXpreMEM_MR(EXpreMEM_MemRW[1]),//lw
     .EXpreMEM_MW(EXpreMEM_MemRW[0]),//sw
+    .preMEM_MR(preMEM_MemRW[1]),
+    .preMEM_MW(preMEM_MemRW[0]),
     //Control Hazard
-    .IFID_Branch(IFID_Branch),
-    .IDEX_Branch(IDEX_branch),
-    .IFID_Jump(IFID_Jump),
-    .IDEX_Jump(IDEX_isjl|IDEX_isjr), 
+    .IDEX_branch(IDEX_branch),
     .EXpreMEM_Branch(EXpreMEM_branch),
     .preMEM_Branch(preMEM_branch),
     //Output
-    .PCWen(PCWen),//1:??��
-    .IFIDWen(IFIDWen),//1????��
-    .Contrl_zero(Ctrl_Z)//1:????? 0:??IDEX???��?��???????//???
+    .PCWen(PCWen),
+    .IFIDWen(IFIDWen),
+    .Contrl_zero(Ctrl_Z)
     );
 
 PCreg32 pcreg32(
     .clk(clk),
     .rst(rst),
     .PCWen(PCWen),//PC write enable
-    .isjl(IDEX_isjl),//?????????
-    .isjr(IDEX_isjr),//?????????
-    .IDEX_Branch(IDEX_branch),//ID_EX???branch???
-    .EXpreMEM_Branch(EXpreMEM_branch),//EX_preMem??????
-    .preMEM_Branch(preMEM_branch),//preMem??????
-    .jump_reg_pc(ALU_res),//jr??????
-    .PC(IDEX_pc),//???PC
-    .imm(IDEX_Imm),//??????
-    .compres(res_comp), //?????
-    .pre_pc(pre_pc), //?????pc
-    .PC_out(pc)//????????
+    .isjl(IDEX_isjl),
+    .isjr(IDEX_isjr),
+    .IDEX_Branch(IDEX_branch),
+    .EXpreMEM_Branch(EXpreMEM_branch),
+    .preMEM_Branch(preMEM_branch),
+    .jump_reg_pc(ALU_res),
+    .PC(IDEX_pc),
+    .imm(IDEX_Imm),
+    .compres(res_comp), 
+    .pre_pc(pre_pc),
+    .PC_out(pc)
     );
 
-SCPU_ctrl  scpu_ctrl(//????ID??��???
+SCPU_ctrl  scpu_ctrl(
 //31...26:opcode 6bit
 //5...0 func  6bit
     .Ctrl_Z(Ctrl_Z),
@@ -335,35 +335,27 @@ SCPU_ctrl  scpu_ctrl(//????ID??��???
     .OPcode(IFID_inst[31:26]),
     .Func6(IFID_inst[5:0]),
     .ImmSel(ImmSel),
-    .ALUSrc_B(ALUSrc_B),//ALUB??????0:rs2,1:imm
-    .ALUSrc_A(ALUSrc_A),//ALUA??????0:rs1,1:imm
+    .ALUSrc_B(ALUSrc_B),//ALUB 0:rs2,1:imm
+    .ALUSrc_A(ALUSrc_A),//ALUA 0:rs1,1:imm
     .MemtoReg(MemtoReg),//0:ALU,1:Mem,2:PC+4 3:Imm 4:pc+imm 
     //pc_jump
     .isBranch(isBranch),
     .is_jl(is_jl),
     .is_jr(is_jr),
-    .RegWrite(RegWrite),//1:register??��
+    .RegWrite(RegWrite),
     .MemW(MemW),
     .MemR(MemR),
     .mem_op(mem_op),
-    .ALU_Control(ALU_Control),//ALU???????
+    .ALU_Control(ALU_Control),
     .Comp_ctrl(Comp_ctrl)
     );   
     
-mem_sel memsel(//????dram��??????
-    .addr(EXpreMEM_Alu[1:0]),
-    .mem_op(EXpreMEM_mem_op),
-    .mem_sel(mem_sel)
-    );
-    
-//?????????? 
 immGen immgen(//ID
     .inst_field(IFID_inst),
     .ImmSel(ImmSel),
     .Imm_out(Immediate)
     );
-
-//???REG��???????        
+     
 Write2Reg wr(
     .pc(MEMWB_pc),
     .ALU(MEMWB_Alu),
@@ -392,11 +384,12 @@ Alu alu(
     .b_val(Alu_rs2),
     .ctrl(IDEX_Aluop),
     .result(ALU_res),
+    .mem_op(IDEX_mem_op),
+    .mem_sel(mem_sel_o),
     .comp_ctrl(Comp_ctrl),
     .res_comp(res_comp)
     );
 
-//////////////////////////
 //Forwarding:
 Forwarding fw(
     //ctrl signal
@@ -427,6 +420,5 @@ Forwarding fw(
     .ALU_Scr1(Alu_rs1),
     .ALU_Scr2(Alu_rs2) 
     );
-///////////////////////////
 
 endmodule

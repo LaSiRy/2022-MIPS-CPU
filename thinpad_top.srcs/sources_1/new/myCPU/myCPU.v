@@ -30,11 +30,10 @@ module myCPU(
     output wire [31:0] inst_sram_wdata,
     input wire [31:0] inst_sram_rdata, 
 //    `DBG_Core_Outputs
-    output wire [31:0] debug_wb_pc,
-    output wire [3:0]  debug_wb_rf_wen,
-    output wire [4:0]  debug_wb_rf_wnum,
-    output wire [31:0] debug_wb_rf_wdata,
-    
+(*mark_debug = "true"*) output wire [31:0] debug_wb_pc,
+(*mark_debug = "true"*) output wire [3:0]  debug_wb_rf_wen,     
+(*mark_debug = "true"*) output wire [4:0]  debug_wb_rf_wnum,    
+(*mark_debug = "true"*) output wire [31:0] debug_wb_rf_wdata,   
     output wire data_sram_en,    
     output wire [3:0] data_sram_wen,   
     output wire [31:0] data_sram_addr,  

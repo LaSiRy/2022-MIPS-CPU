@@ -25,26 +25,26 @@ module SCPU_ctrl(
     input wire[5:0]Func6,  //inst[5:0]
     input wire Ctrl_Z,
     output reg [2:0]ImmSel,
-    output reg ALUSrc_B,//ALUBï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½0:rs2,1:imm
-    output reg ALUSrc_A,//ALUAï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½0:rs1,1:imm
+    output reg ALUSrc_B,//ALUBÊäÈëÊý¾ÝÑ¡Ôñ?0:rs2,1:imm
+    output reg ALUSrc_A,//ALUAÊäÈëÊý¾ÝÑ¡Ôñ?0:rs1,1:imm
     output reg [1:0]MemtoReg,//0:ALU,1:Mem,2:PC+8 3:lui
     output reg isBranch,
     output reg is_jl,
     output reg is_jr,
-    output reg RegWrite,//1:regeiterï¿½ï¿½Ð´
-    output reg MemR,//Memï¿½ï¿½
+    output reg RegWrite,//1:regeiterÐ´
+    output reg MemR,//Mem¶Á
     output reg MemW,//MemÐ´
-    output reg [1:0]mem_op,//Memï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½
-    output reg [3:0]ALU_Control,//ALUï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½
+    output reg [1:0]mem_op,//Mem²Ù×÷
+    output reg [3:0]ALU_Control,//ALU²Ù×÷
     output reg [2:0]Comp_ctrl
     
     );
     always @* begin
     if(rst==1'b1)begin
        isBranch<=0;
-       RegWrite<=0;//1:regeiterï¿½ï¿½Ð´
-       MemR<=0;//Memï¿½ï¿½
-       MemW<=0;//MemÐ´
+       RegWrite<=0;
+       MemR<=0;
+       MemW<=0;
        is_jl<=0;
        is_jr<=0;
     end
@@ -104,7 +104,7 @@ module SCPU_ctrl(
                is_jr<=0;
                ALU_Control<=`ALU_OR;
                end
-        `XORI: begin//addi
+        `XORI: begin//xori
                ALUSrc_B<=1'b1;
                ALUSrc_A<=0;
                RegWrite<=1'b1&Ctrl_Z;
@@ -183,16 +183,6 @@ module SCPU_ctrl(
                     is_jl<=0;
                     is_jr<=0;
                     end 
-                  `OP_SLL:begin
-                    ALUSrc_B<=0;
-                    ALUSrc_A<=1'b1;
-                    ImmSel<=3'b101;
-                    ALU_Control<=`ALU_SLL;
-                    MemtoReg<=0;
-                    RegWrite<=1'b1&Ctrl_Z;
-                    is_jl<=0;
-                    is_jr<=0;
-                    end
                   `OP_SLT:begin
                     ALUSrc_B<=0;
                     ALUSrc_A<=0;
@@ -206,6 +196,16 @@ module SCPU_ctrl(
                     ALUSrc_B<=0;
                     ALUSrc_A<=0;
                     ALU_Control<=`ALU_XOR;
+                    MemtoReg<=0;
+                    RegWrite<=1'b1&Ctrl_Z;
+                    is_jl<=0;
+                    is_jr<=0;
+                    end
+                  `OP_SLL:begin
+                    ALUSrc_B<=0;
+                    ALUSrc_A<=1'b1;
+                    ImmSel<=3'b101;
+                    ALU_Control<=`ALU_SLL;
                     MemtoReg<=0;
                     RegWrite<=1'b1&Ctrl_Z;
                     is_jl<=0;
