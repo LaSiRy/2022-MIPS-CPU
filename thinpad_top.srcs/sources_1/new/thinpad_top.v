@@ -145,7 +145,7 @@ wire already_read;
 reg ext_uart_clear;
 reg ext_uart_start;
 
-wire [1:0]extram_stop;
+reg [1:0]extram_stop;
 
 assign base_ram_data = ~base_ram_we_n_r ? base_ram_data_r : 32'bz;
 assign ext_ram_data = ~ext_ram_we_n_r ? ext_ram_data_r : 32'bz;
