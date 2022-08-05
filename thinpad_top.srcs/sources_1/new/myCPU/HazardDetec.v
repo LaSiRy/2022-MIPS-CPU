@@ -66,10 +66,6 @@ module HazardDetec(//��ʵ����forwarding֮��ֻ��xxx-sd, xxx-l
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
-        else if((IDEX_MR | IDEX_MW) && (IFID_sw | IFID_lw))begin
-         data_hazard<=0;
-         control_hazard<=0;//lw-SW
-        end
         else if(IDEX_rd!=0&&IFID_rs2==IDEX_rd&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
@@ -89,6 +85,10 @@ module HazardDetec(//��ʵ����forwarding֮��ֻ��xxx-sd, xxx-l
         else if(MEM_addr >= 32'h80000000 && MEM_addr <= 32'h803fffff && (EXpreMEM_MR|EXpreMEM_MW))begin
          data_hazard<=0;
          control_hazard<=0;//structure hazard
+        end
+        else if((IDEX_MR | IDEX_MW) && (IFID_sw | IFID_lw))begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-SW
         end
         else if(EXpreMEM_Branch|preMEM_Branch)begin//
          data_hazard<=0;
