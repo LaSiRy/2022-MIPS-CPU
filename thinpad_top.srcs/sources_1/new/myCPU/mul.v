@@ -28,6 +28,6 @@ module mul (
     reg [63:0]P;
     assign res = P[31:0];
     always @* begin
-     P <= ($signed(A)) * ($signed(B));
+     P = ($signed(A)) * ($signed(B));
     end
 endmodule
