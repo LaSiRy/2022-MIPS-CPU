@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw-lwÌø×ªÖ¸ÁîĞèÒªnop
+module HazardDetec(//ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½forwardingÖ®ï¿½ï¿½Ö»ï¿½ï¿½xxx-sd, xxx-ld, ld-use/ld-sd,sw-lwï¿½ï¿½×ªÖ¸ï¿½ï¿½ï¿½ï¿½Òªnop
     input wire rst,
     //Structure Hazard
     input wire [31:0]EXpreMEM_addr,
@@ -31,10 +31,10 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
     //Date Hazard
     input wire[4:0]IFID_rs1,
     input wire[4:0]IFID_rs2,
-    input wire IDEX_MR,//Ç°ÃæÊÇ·ñÎªlwĞÍÖ¸Áî
-    input wire IDEX_MW,//Ç°ÃæÊÇ·ñÎªswĞÍÖ¸Áî
-    input wire IFID_sw,//ºóÃæÊÇ·ñÎªswĞÍÖ¸Áî
-    input wire IFID_lw,//ºóÃæÊÇ·ñÊÇlwÖ¸Áî
+    input wire IDEX_MR,//Ç°ï¿½ï¿½ï¿½Ç·ï¿½Îªlwï¿½ï¿½Ö¸ï¿½ï¿½
+    input wire IDEX_MW,//Ç°ï¿½ï¿½ï¿½Ç·ï¿½Îªswï¿½ï¿½Ö¸ï¿½ï¿½
+    input wire IFID_sw,//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªswï¿½ï¿½Ö¸ï¿½ï¿½
+    input wire IFID_lw,//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½lwÖ¸ï¿½ï¿½
     input wire[4:0]IDEX_rd,
     input wire[4:0]EXpreMEM_rd,//only used in ... sw 
     input wire[4:0]preMEM_rd,//only used in ... sw 
@@ -43,10 +43,10 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
     input wire IDEX_branch,
     input wire EXpreMEM_Branch,
     input wire preMEM_Branch,
-    //Output£¬ÎªÍ³Ò»£¬ÓĞHazardÊ±°ÑÏà¹ØĞÅºÅÖÃ0
-    output wire PCWen,//1:¿ÉĞ´
-    output wire IFIDWen,//1£º¿ÉĞ´
-    output wire Contrl_zero//1:²»¸Ä±ä 0:½«IDEXËùÓĞ¶ÁĞ´ĞÅºÅÖÃÁã
+    //Outputï¿½ï¿½ÎªÍ³Ò»ï¿½ï¿½ï¿½ï¿½HazardÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½0
+    output wire PCWen,//1:ï¿½ï¿½Ğ´
+    output wire IFIDWen,//1ï¿½ï¿½ï¿½ï¿½Ğ´
+    output wire Contrl_zero//1:ï¿½ï¿½ï¿½Ä±ï¿½ 0:ï¿½ï¿½IDEXï¿½ï¿½ï¿½Ğ¶ï¿½Ğ´ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½
     );
     reg data_hazard;
     reg control_hazard;
@@ -57,14 +57,6 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
         if(rst==1'b1)begin
          data_hazard<=1'b1;
          control_hazard<=1'b1;
-        end
-        else if(EXpreMEM_addr >= 32'h80000000 && EXpreMEM_addr <= 32'h803fffff && (IDEX_MR|IDEX_MW))begin
-         data_hazard<=0;
-         control_hazard<=0;//structure hazard
-        end
-        else if(MEM_addr >= 32'h80000000 && MEM_addr <= 32'h803fffff && (EXpreMEM_MR|EXpreMEM_MW))begin
-         data_hazard<=0;
-         control_hazard<=0;//structure hazard
         end
 //         else if(preMEM_addr >= 32'h80000000 && preMEM_addr <= 32'h803fffff && (preMEM_MR||preMEM_MW))begin
 //         data_hazard<=0;
@@ -82,6 +74,10 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
+        else if(IDEX_MR && IFID_sw)begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-SW
+        end
         else if(IDEX_rd!=0&&IFID_rs2==IDEX_rd&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
@@ -94,6 +90,14 @@ module HazardDetec(//ÔÚÊµÏÖÁËforwardingÖ®ºó£¬Ö»ÓĞxxx-sd, xxx-ld, ld-use/ld-sd,sw
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
         end 
+        else if(EXpreMEM_addr >= 32'h80000000 && EXpreMEM_addr <= 32'h803fffff && (IDEX_MR|IDEX_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structure hazard
+        end
+        else if(MEM_addr >= 32'h80000000 && MEM_addr <= 32'h803fffff && (EXpreMEM_MR|EXpreMEM_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structure hazard
+        end
 //        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd||IFID_rs2==IDEX_rd)&&IFID_lw)begin
 //         data_hazard<=0;
 //         control_hazard<=0;//xxx-lw

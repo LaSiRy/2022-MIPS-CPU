@@ -56,7 +56,7 @@ module thinpad_top(
     output wire video_de           
 );
 
-// PLL·ÖÆµ
+// PLLï¿½ï¿½Æµ
 wire locked, clk_10M, clk_20M;
 pll_example clock_gen 
  (
@@ -189,6 +189,9 @@ always @ (posedge clk_10M) begin
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
         
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
@@ -210,6 +213,9 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
+        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));      
+        ext_ram_we_n_r <= 1'b1;  
+
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
 
@@ -229,6 +235,9 @@ always @ (posedge clk_10M) begin
         ext_ram_ce_n_r <= ~data_sram_en;
         ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
         ext_ram_data_r <= data_sram_wdata;
+
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
         
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
@@ -249,6 +258,9 @@ always @ (posedge clk_10M) begin
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
         
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
@@ -269,6 +281,9 @@ always @ (posedge clk_10M) begin
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
         
         ext_uart_tx <= (|data_sram_wen)? data_sram_wdata[7:0]:0;
         ext_uart_start <= (|data_sram_wen)? 1'b1:0;
@@ -289,6 +304,9 @@ always @ (posedge clk_10M) begin
         ext_ram_ce_n_r <= 1'b1;
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
+
+        base_ram_we_n_r <= 1'b1;
+        ext_ram_we_n_r <= 1'b1;
         
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
@@ -296,33 +314,6 @@ always @ (posedge clk_10M) begin
         sel_base_sram <= 1'b1;
         sel_uart <= 1'b0;
         sel_uart_flag <= 1'b0;
-    end
-end
-
-always @ (negedge clk_10M) begin
-    if (reset_of_clk10M) begin
-        base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
-    end
-    else if (data_sram_addr >= 32'h80000000 && data_sram_addr <= 32'h803fffff && data_sram_en) begin
-        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));      
-        ext_ram_we_n_r <= 1'b1;  
-    end
-    else if (data_sram_addr >= 32'h80400000 && data_sram_addr <= 32'h807fffff && data_sram_en) begin  
-        base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
-    end
-    else if (data_sram_addr == 32'hBFD003FC && data_sram_en) begin // 
-        base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
-    end
-    else if (data_sram_addr == 32'hBFD003F8 && data_sram_en) begin        
-        base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
-    end
-    else begin    
-        base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
     end
 end
 
@@ -347,12 +338,17 @@ async_transmitter #(.ClkFrequency(25000000),.Baud(9600))
 always @(posedge clk_10M) begin 
     if (reset_of_clk10M) begin
         ext_uart_buffer <= 8'b0;
-        ext_uart_clear <= 0;
     end
     else if(ext_uart_ready)begin
         ext_uart_buffer <= ext_uart_rx;
-        ext_uart_clear <= 0;
     end 
+    else begin end
+end
+
+always @(negedge clk_10M) begin 
+    if (reset_of_clk10M) begin
+        ext_uart_clear <= 1'b1;
+    end
     else if(already_read && ext_uart_clear == 0)begin
         ext_uart_clear <= 1'b1;
     end
@@ -364,8 +360,8 @@ end
 
 
 // wire[7:0] number;
-// SEG7_LUT segL(.oSEG1(dpy0), .iDIG(number[3:0])); //dpy0ÊÇµÍÎ»ÊýÂë¹Ü
-// SEG7_LUT segH(.oSEG1(dpy1), .iDIG(number[7:4])); //dpy1ÊÇ¸ßÎ»ÊýÂë¹Ü
+// SEG7_LUT segL(.oSEG1(dpy0), .iDIG(number[3:0])); //dpy0ï¿½Çµï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½
+// SEG7_LUT segH(.oSEG1(dpy1), .iDIG(number[7:4])); //dpy1ï¿½Ç¸ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½
 // reg [7:0] wdata_r;
 
 // assign number = wdata_r;
