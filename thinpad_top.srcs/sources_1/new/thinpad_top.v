@@ -213,7 +213,7 @@ always @ (posedge clk_10M) begin
         ext_ram_oe_n_r <= 1'b1;
         ext_ram_data_r <= 32'b0;
         
-        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));      
+        base_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)) ;      
         ext_ram_we_n_r <= 1'b1;  
 
         ext_uart_tx <= 0;
@@ -232,12 +232,12 @@ always @ (posedge clk_10M) begin
         
         ext_ram_addr_r <= data_sram_addr[21:2];
         ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
-        ext_ram_ce_n_r <= ~data_sram_en;
-        ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
+        ext_ram_ce_n_r <= (~data_sram_en) | (extram_stop[0]);
+        ext_ram_oe_n_r <= (~(data_sram_en & ~(|data_sram_wen)))| (extram_stop[0]);
         ext_ram_data_r <= data_sram_wdata;
 
         base_ram_we_n_r <= 1'b1;
-        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen)); 
+        ext_ram_we_n_r <= (~(data_sram_en & (|data_sram_wen))) | (extram_stop[0]); 
         
         ext_uart_tx <= 0;
         ext_uart_start <= 0;
@@ -355,6 +355,22 @@ always @(negedge clk_10M) begin
     else begin
         ext_uart_clear <= 0;
     end
+end
+
+
+wire [1:0]extram_stop;
+always @(posedge clk_10M) begin
+  if (reset_of_clk10M) begin 
+    extram_stop<=2'b0;
+  end
+  else if (data_sram_addr >= 32'h80400000 && data_sram_addr <= 32'h807fffff && data_sram_en)begin//就是前面循环里认为开始
+      if (extram_stop[1]==1'b0)
+          extram_stop<={1'b1, extram_stop[1]};
+        else
+          extram_stop<={1'b0, extram_stop[1]};
+  end
+  else
+      extram_stop<={1'b0, extram_stop[1]};
 end
 
 
