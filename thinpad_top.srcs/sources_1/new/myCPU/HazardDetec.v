@@ -59,14 +59,6 @@ module HazardDetec(
          data_hazard<=1'b1;
          control_hazard<=1'b1;
         end
-        else if(EXpreMEM_addr >= 32'h80000000 && EXpreMEM_addr <= 32'h803fffff && (IDEX_MR || IDEX_MW))begin
-         data_hazard<=0;
-         control_hazard<=0;//structural hazard
-        end
-        else if(MemAddr >= 32'h80000000 && MemAddr <= 32'h803fffff && (EXpreMEM_MR || EXpreMEM_MW))begin
-         data_hazard<=0;
-         control_hazard<=0;//structural hazard
-        end
         else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd||IFID_rs2==IDEX_rd)&&IDEX_MR)begin
          data_hazard<=0;
          control_hazard<=0;//lw-use
@@ -75,11 +67,15 @@ module HazardDetec(
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
-        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IFID_sw)begin
+        else if(IDEX_MW&&IFID_lw)begin
+         data_hazard<=0;
+         control_hazard<=0;//lw-sw
+        end
+        else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd||IFID_rs2==IDEX_rd)&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
         end 
-        else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd|IFID_rs2==EXpreMEM_rd)&&IFID_sw)begin
+        else if(EXpreMEM_rd!=0&&(IFID_rs1==EXpreMEM_rd||IFID_rs2==EXpreMEM_rd)&&IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
         end 
@@ -87,6 +83,14 @@ module HazardDetec(
          data_hazard<=0;
          control_hazard<=0;//xxx-sw
         end 
+        else if(EXpreMEM_addr >= 32'h80000000 && EXpreMEM_addr <= 32'h803fffff && (IDEX_MR || IDEX_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structural hazard
+        end
+        else if(MemAddr >= 32'h80000000 && MemAddr <= 32'h803fffff && (EXpreMEM_MR || EXpreMEM_MW))begin
+         data_hazard<=0;
+         control_hazard<=0;//structural hazard
+        end
         // else if(IDEX_rd!=0&&(IFID_rs1==IDEX_rd|IFID_rs2==IDEX_rd)&&IFID_lw)begin
         //  data_hazard<=0;
         //  control_hazard<=0;//xxx-lw
