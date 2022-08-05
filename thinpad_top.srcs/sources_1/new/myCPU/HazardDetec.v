@@ -86,14 +86,14 @@ module HazardDetec(//��ʵ����forwarding֮��ֻ��xxx-sd, xxx-l
          data_hazard<=0;
          control_hazard<=0;//structure hazard
         end
-        else if(EXpreMEM_Branch|preMEM_Branch)begin//
-         data_hazard<=0;
-         control_hazard<=1'b1;
-        end  
         else if((IDEX_MR | IDEX_MW) && (IFID_sw | IFID_lw))begin
          data_hazard<=0;
          control_hazard<=0;//lw-SW
         end
+        else if(EXpreMEM_Branch|preMEM_Branch)begin//
+         data_hazard<=0;
+         control_hazard<=1'b1;
+        end  
         else begin
          data_hazard<=1'b1;
          control_hazard<=1'b1;

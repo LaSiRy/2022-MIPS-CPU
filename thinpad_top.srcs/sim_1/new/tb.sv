@@ -49,7 +49,7 @@ wire [31:0] debug_wb_rf_wdata;
 
 //`DBG_Core_Declaration
 //`DBG_RegFile_Declaration
-parameter BASE_RAM_INIT_FILE = "D:\\longxin\\nscscc-group\\func_test_v0.01\\soft\\func\\obj\\main.bin";
+parameter BASE_RAM_INIT_FILE = "D:\\longxin\\nscscc2022_single_v1\\nscscc2022_single_v1\\supervisor_v2.01\\lab2\\lab2.bin";
 parameter EXT_RAM_INIT_FILE = "D:\\longxin\\tmp\\dram.bin";
 parameter FLASH_INIT_FILE = "D:\\longxin\\nscscc2022_single_v1\\nscscc2022_single_v1\\supervisor_v2.01\\kernel\\kernel.elf";
 
