@@ -74,7 +74,7 @@ module HazardDetec(//��ʵ����forwarding֮��ֻ��xxx-sd, xxx-l
          data_hazard<=0;
          control_hazard<=0;//lw-use
         end
-        else if(IDEX_MR && IFID_sw)begin
+        else if((IDEX_MR|IDEX_MW) && IFID_sw)begin
          data_hazard<=0;
          control_hazard<=0;//lw-SW
         end
