@@ -347,7 +347,7 @@ end
 
 always @(negedge clk_10M) begin 
     if (reset_of_clk10M) begin
-        ext_uart_clear <= 1'b1;
+        ext_uart_clear <= 0;
     end
     else if(already_read && ext_uart_clear == 0)begin
         ext_uart_clear <= 1'b1;
