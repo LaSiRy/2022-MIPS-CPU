@@ -160,7 +160,7 @@ assign ext_ram_ce_n = ext_ram_ce_n_r;
 assign ext_ram_oe_n = ext_ram_oe_n_r;
 assign ext_ram_we_n = ext_ram_we_n_r;
 
-assign already_read = ext_uart_ready && (sel_uart & (~sel_uart_flag));
+assign already_read = ext_uart_ready & (sel_uart & (~sel_uart_flag));
 
 always @ (*) begin
     if (reset_of_clk10M) begin
