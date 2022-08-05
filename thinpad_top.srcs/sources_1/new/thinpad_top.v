@@ -338,26 +338,24 @@ async_transmitter #(.ClkFrequency(25000000),.Baud(9600))
 always @(posedge clk_10M) begin 
     if (reset_of_clk10M) begin
         ext_uart_buffer <= 8'b0;
-        ext_uart_clear <= 0;
     end
     else if(ext_uart_ready)begin
         ext_uart_buffer <= ext_uart_rx;
-        ext_uart_clear <= 1'b1;
     end 
     else begin end
 end
 
-// always @(negedge clk_10M) begin 
-//     if (reset_of_clk10M) begin
-//         ext_uart_clear <= 0;
-//     end
-//     else if(already_read && ext_uart_clear == 0)begin
-//         ext_uart_clear <= 1'b1;
-//     end
-//     else begin
-//         ext_uart_clear <= 0;
-//     end
-// end
+always @(negedge clk_10M) begin 
+    if (reset_of_clk10M) begin
+        ext_uart_clear <= 0;
+    end
+    else if(already_read && ext_uart_clear == 0)begin
+        ext_uart_clear <= 1'b1;
+    end
+    else begin
+        ext_uart_clear <= 0;
+    end
+end
 
 
 
